@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Recommender Systems - DCS 404</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Recommender Systems";
+        var mkdocs_page_input_path = "DCS404/16_recommender_systems.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> DCS 404
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Welcome</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../InstallationGuide/">Installation Guide</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Machine Learning and AI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../01_introduction_to_machine_learning/">Introduction to Machine Learning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02_ml_workflow/">ML Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03_regression/">Regression</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04_gradient_descent/">Gradient Descent</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../05_regularization/">Regularization</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06_logistic_regression/">Classification & Logistic Regression</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07_decision_trees/">Decision Trees</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../08_evaluation_metrics/">Evaluation Metrics</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../09_knn/">K-Nearest Neighbors</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Unsupervised Learning</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../15_kmeans_clustering/">K-Means Clustering</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Recommender Systems</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Recommender Systems</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-work-through-this">How to work through this</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#learning-objectives">Learning objectives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#1-what-recommender-systems-actually-do">1. What recommender systems actually do</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-two-paradigms-content-based-vs-collaborative">2. Two paradigms: content-based vs. collaborative</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-content-based-filtering-hands-on">3. Content-based filtering, hands-on</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-collaborative-filtering-hands-on">4. Collaborative filtering, hands-on</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-matrix-factorization-learning-the-taste-dimensions">5. Matrix factorization: learning the taste dimensions</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-choosing-the-number-of-factors-and-evaluating-properly">6. Choosing the number of factors, and evaluating properly</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-the-library-shortcut-and-why-it-needs-a-caveat-here">7. The library shortcut — and why it needs a caveat here</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#8-where-recommenders-struggle">8. Where recommenders struggle</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#9-your-turn">9. Your turn</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#10-if-you-remember-nothing-else">10. If you remember nothing else</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#11-further-reading-and-glossary">11. Further reading and glossary</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#further-reading">Further reading</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#glossary">Glossary</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Time Series Analysis</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../10_time_series_foundations/">Time Series Foundations</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../11_exponential_smoothing/">Exponential Smoothing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../12_arima_models/">ARIMA and SARIMA Models</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Deep Learning</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../13_neural_networks/">Neural Networks</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../14_pytorch_ann/">PyTorch and ANN</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Final Project</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../project/00_final_project/">Project Work</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">DCS 404</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Recommender Systems</li>
+      <li class="breadcrumb-item active">Recommender Systems</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="recommender-systems-finding-what-youll-like">Recommender Systems: Finding What You'll Like</h1>
+<p><strong>DCS 404 · Data Science and Machine Learning</strong></p>
+<hr />
+<p>"Customers who bought this also bought..." "Because you watched..." "Recommended for you." Every major
+platform you use — streaming, shopping, social — runs on some version of the same question: given what
+someone has liked before, what else will they like? That question turns out to be answerable with
+surprisingly little machinery, and this module builds that machinery from the ground up.</p>
+<p>Recommender systems sit at an interesting crossroads of everything this course has covered. They reuse the
+K-Nearest Neighbors module's core idea — similar things are close together, so find the neighbors — applied
+to <em>people and their tastes</em> instead of data points in feature space. They reuse the Clustering module's
+unsupervised framing — no one hands you a "correct" recommendation to train against. And the most powerful
+technique here, matrix factorization, is trained with the exact same gradient descent the Gradient Descent
+module built from scratch, just pointed at a different objective. Nothing in this module is a genuinely new
+idea; it's familiar tools, aimed at a new problem.</p>
+<h2 id="how-to-work-through-this">How to work through this</h2>
+<p>Run every code cell in order (<code>Shift + Enter</code>). This module builds one small, hand-inspectable movie-ratings
+dataset in Setup and works through <strong>three genuinely different approaches</strong> on it — content-based filtering,
+collaborative filtering, and matrix factorization — so you can compare what each one recommends and <em>why</em>
+they disagree sometimes. A larger, purely synthetic dataset shows up only in Section 6, where we need enough
+data to properly hold some out for evaluation.</p>
+<p>Everything here runs offline, in seconds, using only NumPy, pandas and scikit-learn — no new dataset to
+download, no new library to install.</p>
+<h2 id="learning-objectives">Learning objectives</h2>
+<p>After completing this module you will be able to:</p>
+<ul>
+<li>Explain why recommendation is framed as filling in a mostly-empty user-item matrix, and what "sparsity"
+  means in that context.</li>
+<li>Contrast <strong>content-based filtering</strong> (similarity between item features) with <strong>collaborative filtering</strong>
+  (similarity between rating patterns), and explain when each one can or can't make a recommendation.</li>
+<li>Implement a content-based recommender using cosine similarity over item feature vectors.</li>
+<li>Implement user-based and item-based collaborative filtering from scratch, and use leave-one-out validation
+  to check a prediction against a known rating.</li>
+<li>Explain <strong>matrix factorization</strong> as learning latent user and item vectors, implement it from scratch with
+  gradient descent over <em>only the observed entries</em>, and choose the number of latent factors with a
+  validation curve.</li>
+<li>Evaluate a recommender with RMSE against a held-out set and against a naive baseline.</li>
+<li>Describe recommender systems' major practical failure modes: the cold-start problem, popularity bias, and
+  scale.</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<p>Run this once. Libraries, the usual plotting style, and one small, fully hand-inspectable movie-ratings
+dataset — ten users, ten movies, most pairs unrated — reused for most of this module.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics.pairwise</span><span class="w"> </span><span class="kn">import</span> <span class="n">cosine_similarity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.decomposition</span><span class="w"> </span><span class="kn">import</span> <span class="n">NMF</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+    <span class="s2">&quot;figure.figsize&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">),</span>
+    <span class="s2">&quot;figure.dpi&quot;</span><span class="p">:</span> <span class="mi">110</span><span class="p">,</span>
+    <span class="s2">&quot;axes.grid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">&quot;grid.alpha&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="s2">&quot;axes.spines.top&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;axes.spines.right&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;font.size&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_palette</span><span class="p">(</span><span class="s2">&quot;deep&quot;</span><span class="p">)</span>
+<span class="n">RANDOM_STATE</span> <span class="o">=</span> <span class="mi">0</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">movies</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;The Matrix&quot;</span><span class="p">,</span> <span class="s2">&quot;Inception&quot;</span><span class="p">,</span> <span class="s2">&quot;Interstellar&quot;</span><span class="p">,</span> <span class="s2">&quot;Die Hard&quot;</span><span class="p">,</span> <span class="s2">&quot;Mad Max: Fury Road&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;The Hangover&quot;</span><span class="p">,</span> <span class="s2">&quot;Superbad&quot;</span><span class="p">,</span> <span class="s2">&quot;Notting Hill&quot;</span><span class="p">,</span> <span class="s2">&quot;The Notebook&quot;</span><span class="p">,</span> <span class="s2">&quot;La La Land&quot;</span><span class="p">]</span>
+
+<span class="c1"># One-hot genre tags per movie -- the item &quot;content&quot; the Content-Based section works from</span>
+<span class="n">genre_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Action&quot;</span><span class="p">,</span> <span class="s2">&quot;Comedy&quot;</span><span class="p">,</span> <span class="s2">&quot;Drama&quot;</span><span class="p">,</span> <span class="s2">&quot;Romance&quot;</span><span class="p">,</span> <span class="s2">&quot;Sci-Fi&quot;</span><span class="p">,</span> <span class="s2">&quot;Thriller&quot;</span><span class="p">]</span>
+<span class="n">genres</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>   <span class="c1"># The Matrix</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>   <span class="c1"># Inception</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>   <span class="c1"># Interstellar</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>   <span class="c1"># Die Hard</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>   <span class="c1"># Mad Max: Fury Road</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>   <span class="c1"># The Hangover</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>   <span class="c1"># Superbad</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>   <span class="c1"># Notting Hill</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>   <span class="c1"># The Notebook</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>   <span class="c1"># La La Land</span>
+<span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="n">genre_names</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">movies</span><span class="p">)</span>
+
+<span class="n">users</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Alice&quot;</span><span class="p">,</span><span class="s2">&quot;Bob&quot;</span><span class="p">,</span><span class="s2">&quot;Carol&quot;</span><span class="p">,</span><span class="s2">&quot;Dave&quot;</span><span class="p">,</span><span class="s2">&quot;Eve&quot;</span><span class="p">,</span><span class="s2">&quot;Frank&quot;</span><span class="p">,</span><span class="s2">&quot;Grace&quot;</span><span class="p">,</span><span class="s2">&quot;Heidi&quot;</span><span class="p">,</span><span class="s2">&quot;Ivan&quot;</span><span class="p">,</span><span class="s2">&quot;Judy&quot;</span><span class="p">]</span>
+<span class="n">nan</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+<span class="n">ratings_data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1">#        Matrix Inc  Inter DieH  MadMax Hang  Super Nott  Note  LaLa</span>
+    <span class="s2">&quot;Alice&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span>   <span class="mi">5</span><span class="p">,</span>   <span class="mi">4</span><span class="p">,</span>   <span class="mi">4</span><span class="p">,</span>   <span class="n">nan</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>   <span class="n">nan</span><span class="p">,</span> <span class="n">nan</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span>   <span class="mi">2</span>  <span class="p">],</span>
+    <span class="s2">&quot;Bob&quot;</span><span class="p">:</span>   <span class="p">[</span><span class="mi">4</span><span class="p">,</span>   <span class="mi">4</span><span class="p">,</span>   <span class="mi">5</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>   <span class="mi">4</span><span class="p">,</span>   <span class="n">nan</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>   <span class="n">nan</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span>   <span class="mi">2</span>  <span class="p">],</span>
+    <span class="s2">&quot;Carol&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span>   <span class="n">nan</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span>   <span class="n">nan</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>   <span class="mi">4</span><span class="p">,</span>   <span class="mi">4</span><span class="p">,</span>   <span class="mi">4</span><span class="p">,</span>   <span class="mi">5</span><span class="p">,</span>   <span class="n">nan</span><span class="p">],</span>
+    <span class="s2">&quot;Dave&quot;</span><span class="p">:</span>  <span class="p">[</span><span class="mi">2</span><span class="p">,</span>   <span class="n">nan</span><span class="p">,</span> <span class="n">nan</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span>   <span class="mi">2</span><span class="p">,</span>   <span class="mi">5</span><span class="p">,</span>   <span class="mi">4</span><span class="p">,</span>   <span class="n">nan</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span>   <span class="mi">3</span>  <span class="p">],</span>
+    <span class="s2">&quot;Eve&quot;</span><span class="p">:</span>   <span class="p">[</span><span class="n">nan</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>   <span class="n">nan</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>   <span class="mi">4</span><span class="p">,</span>   <span class="mi">5</span><span class="p">,</span>   <span class="mi">4</span><span class="p">,</span>   <span class="n">nan</span><span class="p">],</span>
+    <span class="s2">&quot;Frank&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span>   <span class="mi">4</span><span class="p">,</span>   <span class="mi">5</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>   <span class="mi">4</span><span class="p">,</span>   <span class="mi">2</span><span class="p">,</span>   <span class="n">nan</span><span class="p">,</span> <span class="n">nan</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span>   <span class="mi">4</span>  <span class="p">],</span>
+    <span class="s2">&quot;Grace&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">nan</span><span class="p">,</span> <span class="n">nan</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span>   <span class="mi">1</span><span class="p">,</span>   <span class="n">nan</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span>   <span class="mi">4</span><span class="p">,</span>   <span class="n">nan</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span>   <span class="mi">5</span>  <span class="p">],</span>
+    <span class="s2">&quot;Heidi&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span>   <span class="n">nan</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span>   <span class="mi">4</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>   <span class="mi">4</span><span class="p">,</span>   <span class="mi">4</span><span class="p">,</span>   <span class="n">nan</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>   <span class="mi">2</span>  <span class="p">],</span>
+    <span class="s2">&quot;Ivan&quot;</span><span class="p">:</span>  <span class="p">[</span><span class="mi">4</span><span class="p">,</span>   <span class="mi">4</span><span class="p">,</span>   <span class="mi">4</span><span class="p">,</span>   <span class="mi">5</span><span class="p">,</span>   <span class="mi">5</span><span class="p">,</span>   <span class="mi">2</span><span class="p">,</span>   <span class="n">nan</span><span class="p">,</span> <span class="n">nan</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span>   <span class="mi">2</span>  <span class="p">],</span>
+    <span class="s2">&quot;Judy&quot;</span><span class="p">:</span>  <span class="p">[</span><span class="mi">2</span><span class="p">,</span>   <span class="n">nan</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>   <span class="mi">2</span><span class="p">,</span>   <span class="mi">5</span><span class="p">,</span>   <span class="mi">5</span><span class="p">,</span>   <span class="mi">4</span><span class="p">,</span>   <span class="n">nan</span><span class="p">,</span> <span class="n">nan</span><span class="p">],</span>
+<span class="p">}</span>
+<span class="n">ratings</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">ratings_data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">movies</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="n">ratings</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ratings</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> users x </span><span class="si">{</span><span class="n">ratings</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> movies, &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ratings</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2"> of the matrix unrated&quot;</span><span class="p">)</span>
+<span class="n">ratings</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>10 users x 10 movies, 27% of the matrix unrated
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>The Matrix</th>
+      <th>Inception</th>
+      <th>Interstellar</th>
+      <th>Die Hard</th>
+      <th>Mad Max: Fury Road</th>
+      <th>The Hangover</th>
+      <th>Superbad</th>
+      <th>Notting Hill</th>
+      <th>The Notebook</th>
+      <th>La La Land</th>
+    </tr>
+    <tr>
+      <th>user</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Alice</th>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>Bob</th>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>Carol</th>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>1.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Dave</th>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>3.0</td>
+    </tr>
+    <tr>
+      <th>Eve</th>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>3.0</td>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Frank</th>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>Grace</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Heidi</th>
+      <td>3.0</td>
+      <td>NaN</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>1.0</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>Ivan</th>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>Judy</th>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<hr />
+<h2 id="1-what-recommender-systems-actually-do">1. What recommender systems actually do</h2>
+<p>Every recommender problem reduces to one object: a <strong>user-item matrix</strong>, rows are users, columns are items,
+and each cell is however that user feels about that item. The table printed above <em>is</em> one. Two things about
+it are worth noticing immediately, because they shape everything that follows:</p>
+<ul>
+<li><strong>Most of it is empty.</strong> No user has rated every movie — nobody has watched everything — and real
+  platforms make even our fairly-empty toy matrix look dense: Netflix-scale matrices are routinely <strong>99%+
+  empty</strong>. This is <strong>sparsity</strong>, and it's the central practical challenge in recommendation: almost
+  everything you'd like to know, you don't have.</li>
+<li><strong>The goal is to fill in the blanks.</strong> A recommender's real job is predicting what value would sit in each
+  empty cell, then surfacing whichever empty cells look highest for a given user. Everything from here on is
+  a different strategy for making that guess.</li>
+</ul>
+<p>Ratings can come from two kinds of signal. <strong>Explicit feedback</strong> is a user directly telling you their
+opinion — a star rating, a thumbs up. It's exactly what our matrix contains, and it's clean but rare (most
+users never rate anything). <strong>Implicit feedback</strong> is inferred from behaviour — watched to the end, clicked,
+added to cart, skipped after five seconds — and it's abundant but noisier (a click isn't a like). Production
+systems lean heavily on implicit feedback simply because there's so much more of it; this module uses
+explicit ratings throughout because they're easier to reason about by hand, but every technique here applies
+to implicit signals too, once they're turned into some numeric strength-of-preference.</p>
+<hr />
+<h2 id="2-two-paradigms-content-based-vs-collaborative">2. Two paradigms: content-based vs. collaborative</h2>
+<p>There are two fundamentally different sources of "similar" a recommender can lean on, and they lead to two
+families of algorithm.</p>
+<p><strong>Content-based filtering</strong> looks at what an item <em>is</em> — its features, like the genre tags in our <code>genres</code>
+table — and recommends items similar to ones a user already liked. It's the K-Nearest Neighbors module's
+distance-in-feature-space idea, aimed at items instead of at classifying a point. Its biggest strength is
+also structural: a brand-new item with zero ratings can still be recommended immediately, the moment its
+features are known.</p>
+<p><strong>Collaborative filtering</strong> ignores item features entirely and looks instead at <em>rating patterns</em> — users
+who rated things similarly to you, or items that got rated similarly by the same people. It needs no
+understanding of <em>why</em> people like what they like, only that enough people have told it what they like. Its
+weakness is the mirror image of content-based filtering's strength: a brand-new item with no ratings yet is
+invisible to it, and a brand-new user with no ratings yet has no pattern to match against — the <strong>cold-start
+problem</strong>, which Section 8 returns to.</p>
+<p>Sections 3 and 4 build one working version of each, on the same ten users and ten movies, so you can watch
+them occasionally agree and occasionally not.</p>
+<hr />
+<h2 id="3-content-based-filtering-hands-on">3. Content-based filtering, hands-on</h2>
+<p>The recipe: build a <strong>user profile</strong> — a genre vector summarising what a user tends to like — then recommend
+whichever <em>unrated</em> movie is most similar to that profile. The profile itself is just a rating-weighted
+average of the genre vectors of everything the user already rated: a movie they gave a 5 pulls the profile
+much harder toward its genres than a movie they gave a 1.</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">content_based_recommend</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">ratings</span><span class="p">,</span> <span class="n">genres</span><span class="p">,</span> <span class="n">top_n</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Recommend unrated movies whose genre vector is closest to the user&#39;s rating-weighted genre profile.&#39;&#39;&#39;</span>
+    <span class="n">user_ratings</span> <span class="o">=</span> <span class="n">ratings</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">user</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+    <span class="n">profile</span> <span class="o">=</span> <span class="p">(</span><span class="n">genres</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">user_ratings</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">user_ratings</span><span class="p">)</span> <span class="o">/</span> <span class="n">user_ratings</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+    <span class="n">unrated</span> <span class="o">=</span> <span class="n">genres</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">user_ratings</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="n">similarities</span> <span class="o">=</span> <span class="n">cosine_similarity</span><span class="p">(</span><span class="n">genres</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">unrated</span><span class="p">],</span> <span class="n">profile</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">similarities</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">unrated</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;similarity&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">top_n</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Alice&quot;</span><span class="p">,</span> <span class="s2">&quot;Carol&quot;</span><span class="p">,</span> <span class="s2">&quot;Grace&quot;</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2"> rated: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">ratings</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">user</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">content_based_recommend</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">ratings</span><span class="p">,</span> <span class="n">genres</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">()</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Alice rated: [&#39;The Matrix&#39;, &#39;Inception&#39;, &#39;Interstellar&#39;, &#39;Die Hard&#39;, &#39;The Hangover&#39;, &#39;The Notebook&#39;, &#39;La La Land&#39;]
+Mad Max: Fury Road    0.769235
+Notting Hill          0.234115
+Superbad              0.141895
+Name: similarity, dtype: float64
+
+Carol rated: [&#39;The Matrix&#39;, &#39;Interstellar&#39;, &#39;Mad Max: Fury Road&#39;, &#39;The Hangover&#39;, &#39;Superbad&#39;, &#39;Notting Hill&#39;, &#39;The Notebook&#39;]
+La La Land    0.921132
+Inception     0.201456
+Die Hard      0.120873
+Name: similarity, dtype: float64
+
+Grace rated: [&#39;Interstellar&#39;, &#39;Die Hard&#39;, &#39;The Hangover&#39;, &#39;Superbad&#39;, &#39;The Notebook&#39;, &#39;La La Land&#39;]
+Notting Hill          0.801193
+Inception             0.109254
+Mad Max: Fury Road    0.109254
+Name: similarity, dtype: float64
+</code></pre></div>
+<p>Alice's highly-rated movies are almost all Action/Sci-Fi, and the recommender — having never been told
+anything about "genre preference" as a concept, only handed genre tags and star ratings — surfaces <em>Mad Max:
+Fury Road</em>, the one Action/Sci-Fi movie she hasn't seen yet. Carol and Grace lean Drama/Romance/Comedy, and
+each gets pointed at the closest unrated match in that direction. This is exactly the K-Nearest Neighbors
+module's logic, just computing "closest" over genre tags instead of over the original feature columns.</p>
+<p>The blind spot is structural, not a matter of tuning: this recommender has no way to notice that Ivan and
+Alice happen to rate almost everything the same way. It only ever looks at genre tags, never at <em>who agrees
+with whom</em>. That's exactly the signal collaborative filtering is built to use instead.</p>
+<hr />
+<h2 id="4-collaborative-filtering-hands-on">4. Collaborative filtering, hands-on</h2>
+<p>Collaborative filtering asks a different question: instead of "what is this item made of," it asks "who
+rates things the way I do, and what did they think of the thing I haven't seen?" There are two ways to frame
+that, depending on which axis of the matrix you compute similarity over.</p>
+<p><strong>User-based</strong>: find users whose <em>rating patterns</em> resemble the target user's, then predict a missing rating
+as a similarity-weighted average of what those neighbours gave it.</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">predict_rating_user_based</span><span class="p">(</span><span class="n">ratings</span><span class="p">,</span> <span class="n">target_user</span><span class="p">,</span> <span class="n">target_item</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Predict target_user&#39;s rating for target_item from the k most similar users who rated it.&#39;&#39;&#39;</span>
+    <span class="n">user_means</span> <span class="o">=</span> <span class="n">ratings</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">centered</span> <span class="o">=</span> <span class="n">ratings</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">user_means</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>   <span class="c1"># mean-centre so &quot;no rating&quot; -&gt; &quot;no opinion&quot;, not &quot;hated it&quot;</span>
+    <span class="n">similarity</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">cosine_similarity</span><span class="p">(</span><span class="n">centered</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">ratings</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">ratings</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+
+    <span class="n">raters</span> <span class="o">=</span> <span class="n">ratings</span><span class="p">[</span><span class="n">target_item</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">difference</span><span class="p">([</span><span class="n">target_user</span><span class="p">])</span>
+    <span class="n">neighbours</span> <span class="o">=</span> <span class="n">similarity</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">target_user</span><span class="p">,</span> <span class="n">raters</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="n">neighbours</span> <span class="o">=</span> <span class="n">neighbours</span><span class="p">[</span><span class="n">neighbours</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">neighbours</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">user_means</span><span class="p">[</span><span class="n">target_user</span><span class="p">]</span>   <span class="c1"># no positively-similar rater found -- fall back to their own average</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">ratings</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">neighbours</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">target_item</span><span class="p">]</span> <span class="o">*</span> <span class="n">neighbours</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">neighbours</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</code></pre></div>
+<p>To check this actually works, use the same trick the Evaluation Metrics module relies on constantly: hide a
+rating we already know, predict it <em>as if</em> we didn't, and compare.</p>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">user</span><span class="p">,</span> <span class="n">movie</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;Ivan&quot;</span><span class="p">,</span> <span class="s2">&quot;The Matrix&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;Grace&quot;</span><span class="p">,</span> <span class="s2">&quot;Superbad&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;Alice&quot;</span><span class="p">,</span> <span class="s2">&quot;Die Hard&quot;</span><span class="p">)]:</span>
+    <span class="n">true_rating</span> <span class="o">=</span> <span class="n">ratings</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">user</span><span class="p">,</span> <span class="n">movie</span><span class="p">]</span>
+    <span class="n">ratings_hidden</span> <span class="o">=</span> <span class="n">ratings</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">ratings_hidden</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">user</span><span class="p">,</span> <span class="n">movie</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>   <span class="c1"># pretend we never saw this one</span>
+
+    <span class="n">predicted</span> <span class="o">=</span> <span class="n">predict_rating_user_based</span><span class="p">(</span><span class="n">ratings_hidden</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">movie</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">movie</span><span class="si">}</span><span class="s2">: true = </span><span class="si">{</span><span class="n">true_rating</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">, predicted = </span><span class="si">{</span><span class="n">predicted</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Ivan / The Matrix: true = 4, predicted = 4.15
+Grace / Superbad: true = 4, predicted = 4.45
+Alice / Die Hard: true = 4, predicted = 3.68
+</code></pre></div>
+<p>None of these predictions are exact — collaborative filtering is an averaged guess, not a lookup — but each
+one lands close enough to be useful, recovering roughly the right <em>range</em> of opinion purely from "people who
+rate like you" without ever reading a single genre tag.</p>
+<p><strong>Item-based</strong> collaborative filtering swaps the axis: instead of comparing users by their rating patterns,
+compare <em>movies</em> by who rated them alike. "Users who liked <em>The Matrix</em> also tended to like ___" is exactly
+the recommendation engine behind most "similar items" rails.</p>
+<div class="highlight"><pre><span></span><code><span class="n">item_means</span> <span class="o">=</span> <span class="n">ratings</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">item_centered</span> <span class="o">=</span> <span class="n">ratings</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">item_means</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">item_similarity</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">cosine_similarity</span><span class="p">(</span><span class="n">item_centered</span><span class="o">.</span><span class="n">T</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">ratings</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">ratings</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">movie</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;The Matrix&quot;</span><span class="p">,</span> <span class="s2">&quot;The Notebook&quot;</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;most similar to </span><span class="si">{</span><span class="n">movie</span><span class="si">!r}</span><span class="s2"> by rating pattern:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">item_similarity</span><span class="p">[</span><span class="n">movie</span><span class="p">]</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">movie</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">()</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>most similar to &#39;The Matrix&#39; by rating pattern:
+Interstellar          0.757427
+Mad Max: Fury Road    0.711440
+Inception             0.334444
+Name: The Matrix, dtype: float64
+
+most similar to &#39;The Notebook&#39; by rating pattern:
+La La Land      0.461842
+Superbad        0.223814
+The Hangover    0.207870
+Name: The Notebook, dtype: float64
+</code></pre></div>
+<p>Read those neighbours against Section 3's genre tags and notice something: <em>The Matrix</em>'s nearest neighbours
+by rating pattern — <em>Interstellar</em> and <em>Mad Max: Fury Road</em> — are exactly the Action/Sci-Fi movies genre tags
+alone would predict, not any of the Comedy/Romance titles on the other side of the catalog. That's not a
+coincidence baked into the method — it's a sign the two paradigms are picking up on the <em>same</em> underlying
+structure (people who like Sci-Fi/Action tend to like it as a bundle) from two completely independent kinds
+of evidence. When content-based and collaborative filtering agree like this, that's a real signal the
+structure they found is genuine, not an artifact of one particular method.</p>
+<hr />
+<h2 id="5-matrix-factorization-learning-the-taste-dimensions">5. Matrix factorization: learning the taste dimensions</h2>
+<p>Section 4's neighbour-based approach has to search the <em>entire</em> matrix every time it wants a prediction —
+fine for ten users, expensive at Netflix scale. <strong>Matrix factorization</strong> takes a different bet: instead of
+comparing rows and columns directly, learn a small set of hidden <strong>latent factors</strong> that explain the ratings,
+and read predictions straight off those.</p>
+<p>The idea: assume every user has a vector <span class="arithmatex">\(\mathbf p_u \in \mathbb R^f\)</span> describing their taste along <span class="arithmatex">\(f\)</span>
+hidden dimensions, and every movie has a vector <span class="arithmatex">\(\mathbf q_i \in \mathbb R^f\)</span> describing how much of each
+dimension it offers. Neither vector is observed — "dimension 1" is never labelled "Sci-Fi-ness," the
+algorithm just discovers <em>some</em> set of <span class="arithmatex">\(f\)</span> numbers per user and per movie that multiply together to explain
+the ratings we do have:</p>
+<div class="arithmatex">\[\hat r_{ui} = \mathbf p_u \cdot \mathbf q_i \qquad\qquad \mathcal J = \sum_{(u,i) \,\in\, \text{observed}}
+\left(r_{ui} - \mathbf p_u \cdot \mathbf q_i\right)^2 + \lambda\left(\|\mathbf p_u\|^2 + \|\mathbf q_i\|^2\right)\]</div>
+<p>The sum runs over <strong>observed ratings only</strong> — this is the detail that makes the whole approach work on a
+sparse matrix, and it's the reason we can't just reach for a generic matrix-decomposition function without
+thinking (Section 7 shows exactly what goes wrong if you try). The regularization term is the Regularization
+module's familiar rent on coefficients, keeping both vectors from growing arbitrarily large to chase noise in
+the handful of ratings each user or movie actually has.</p>
+<p><span class="arithmatex">\(\mathcal J\)</span> is just a sum of squared errors with an L2 penalty — the Gradient Descent module's machinery
+applies directly, mask and all.</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">matrix_factorization</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">n_factors</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">reg</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">n_epochs</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Learn user factors P and item factors Q so that P @ Q.T reconstructs the observed entries of R.&#39;&#39;&#39;</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+    <span class="n">R_observed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+    <span class="n">n_users</span><span class="p">,</span> <span class="n">n_items</span> <span class="o">=</span> <span class="n">R</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">P</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">n_users</span><span class="p">,</span> <span class="n">n_factors</span><span class="p">))</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">n_items</span><span class="p">,</span> <span class="n">n_factors</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_epochs</span><span class="p">):</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="p">(</span><span class="n">R_observed</span> <span class="o">-</span> <span class="n">P</span> <span class="o">@</span> <span class="n">Q</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">*</span> <span class="n">mask</span>       <span class="c1"># zero everywhere a rating wasn&#39;t observed</span>
+        <span class="n">P</span> <span class="o">+=</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">error</span> <span class="o">@</span> <span class="n">Q</span> <span class="o">-</span> <span class="n">reg</span> <span class="o">*</span> <span class="n">P</span><span class="p">)</span>
+        <span class="n">Q</span> <span class="o">+=</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">P</span> <span class="o">-</span> <span class="n">reg</span> <span class="o">*</span> <span class="n">Q</span><span class="p">)</span>
+
+    <span class="n">train_rmse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(((</span><span class="n">R_observed</span> <span class="o">-</span> <span class="n">P</span> <span class="o">@</span> <span class="n">Q</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">*</span> <span class="n">mask</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">mask</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">P</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">train_rmse</span>
+
+<span class="n">R</span> <span class="o">=</span> <span class="n">ratings</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">P</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">train_rmse</span> <span class="o">=</span> <span class="n">matrix_factorization</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">n_factors</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;training RMSE (on observed entries only): </span><span class="si">{</span><span class="n">train_rmse</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">predicted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">P</span> <span class="o">@</span> <span class="n">Q</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>   <span class="c1"># real ratings live in [1, 5]; clip predictions to match</span>
+<span class="n">predicted_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">predicted</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">ratings</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">ratings</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">user</span><span class="p">,</span> <span class="n">movie</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;Alice&quot;</span><span class="p">,</span> <span class="s2">&quot;The Matrix&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;Carol&quot;</span><span class="p">,</span> <span class="s2">&quot;The Notebook&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;Grace&quot;</span><span class="p">,</span> <span class="s2">&quot;La La Land&quot;</span><span class="p">)]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">movie</span><span class="si">}</span><span class="s2">: true = </span><span class="si">{</span><span class="n">ratings</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">user</span><span class="p">,</span><span class="w"> </span><span class="n">movie</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">, predicted = </span><span class="si">{</span><span class="n">predicted_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">user</span><span class="p">,</span><span class="w"> </span><span class="n">movie</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>training RMSE (on observed entries only): 0.586
+Alice / The Matrix: true = 5, predicted = 4.72
+Carol / The Notebook: true = 5, predicted = 3.93
+Grace / La La Land: true = 5, predicted = 4.26
+</code></pre></div>
+<p>Two hidden dimensions, learned from nothing but the observed ratings, reconstruct the known entries closely —
+and the same <code>predicted_df</code> also has a number sitting in every cell that was originally blank, which is the
+entire point: those are the recommendations. One practical detail already handled above: an <em>unconstrained</em>
+factorization can extrapolate outside the valid rating range for cells with very little supporting evidence
+(a handful of raters, or none in common with similar users) — production systems always clip predictions
+back into range, exactly as <code>predicted_df</code> does here.</p>
+<hr />
+<h2 id="6-choosing-the-number-of-factors-and-evaluating-properly">6. Choosing the number of factors, and evaluating properly</h2>
+<p>Ten users and ten movies is too small to responsibly hold data out — there's barely enough signal to fit on,
+let alone spare some for testing. This section switches to a <strong>purely synthetic</strong> dataset built the same way
+Section 5 assumes ratings work: real user and item factors, multiplied together, plus noise — precisely so we
+know the ground truth and can check whether matrix factorization actually recovers it.</p>
+<div class="highlight"><pre><span></span><code><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+<span class="n">n_users</span><span class="p">,</span> <span class="n">n_items</span><span class="p">,</span> <span class="n">true_n_factors</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">3</span>
+
+<span class="n">true_P</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">n_users</span><span class="p">,</span> <span class="n">true_n_factors</span><span class="p">))</span>
+<span class="n">true_Q</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">n_items</span><span class="p">,</span> <span class="n">true_n_factors</span><span class="p">))</span>
+<span class="n">signal</span> <span class="o">=</span> <span class="n">true_P</span> <span class="o">@</span> <span class="n">true_Q</span><span class="o">.</span><span class="n">T</span>
+<span class="n">synthetic_ratings</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="n">signal</span> <span class="o">/</span> <span class="n">signal</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">signal</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># Simulate real-world sparsity: most entries are never observed at all</span>
+<span class="n">observed</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.35</span>
+<span class="n">train_mask</span> <span class="o">=</span> <span class="n">observed</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.8</span><span class="p">)</span>
+<span class="n">test_mask</span> <span class="o">=</span> <span class="n">observed</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">train_mask</span>
+
+<span class="n">R_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">train_mask</span><span class="p">,</span> <span class="n">synthetic_ratings</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">observed</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2"> of the </span><span class="si">{</span><span class="n">n_users</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">n_items</span><span class="si">}</span><span class="s2"> matrix observed at all: &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">train_mask</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2"> training ratings, </span><span class="si">{</span><span class="n">test_mask</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2"> held out for testing&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>35% of the 100x50 matrix observed at all: 1369 training ratings, 365 held out for testing
+</code></pre></div>
+<p><span class="arithmatex">\(f\)</span>, the number of latent factors, is a hyperparameter exactly like <span class="arithmatex">\(K\)</span> was for K-Means — chosen before
+fitting, not learned by gradient descent — and it faces the identical bias-variance trade-off the
+Regularization and K-Means modules both ran into. Too few factors and the model can't represent real taste
+variation (underfitting); too many and it starts fitting noise in the handful of ratings each cell's
+neighbourhood actually has (overfitting). A validation curve — Regularization's approach to choosing
+<span class="arithmatex">\(\lambda\)</span>, K-Means' approach to choosing <span class="arithmatex">\(K\)</span> — settles it here too.</p>
+<div class="highlight"><pre><span></span><code><span class="n">factor_counts</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">)</span>
+<span class="n">test_rmses</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">factor_counts</span><span class="p">:</span>
+    <span class="n">P</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">matrix_factorization</span><span class="p">(</span><span class="n">R_train</span><span class="p">,</span> <span class="n">n_factors</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">reg</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">n_epochs</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+    <span class="n">predicted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">P</span> <span class="o">@</span> <span class="n">Q</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="n">test_rmses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">predicted</span><span class="p">[</span><span class="n">test_mask</span><span class="p">]</span> <span class="o">-</span> <span class="n">synthetic_ratings</span><span class="p">[</span><span class="n">test_mask</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)))</span>
+
+<span class="n">best_f</span> <span class="o">=</span> <span class="n">factor_counts</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">test_rmses</span><span class="p">))]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">factor_counts</span><span class="p">,</span> <span class="n">test_rmses</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">best_f</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:red&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;best: </span><span class="si">{</span><span class="n">best_f</span><span class="si">}</span><span class="s2"> factors&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;number of latent factors $f$&quot;</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;test RMSE&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Choosing $f$ by held-out RMSE (data generated from </span><span class="si">{</span><span class="n">true_n_factors</span><span class="si">}</span><span class="s2"> true factors)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;best f = </span><span class="si">{</span><span class="n">best_f</span><span class="si">}</span><span class="s2"> (data was generated from </span><span class="si">{</span><span class="n">true_n_factors</span><span class="si">}</span><span class="s2"> true factors)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../16_recommender_systems_files/16_recommender_systems_24_0.png" /></p>
+<div class="highlight"><pre><span></span><code>best f = 4 (data was generated from 3 true factors)
+</code></pre></div>
+<p>The same U-shape as every other validation curve this course has drawn: test error falls as the model gains
+enough capacity to represent real structure, then rises again once it has more capacity than the data can
+support. The best <span class="arithmatex">\(f\)</span> needn't land exactly on the number of factors the data was generated from — with a
+finite, sparse sample, a slightly richer or leaner model can fit the <em>available</em> evidence better even if it
+doesn't match the generating process exactly, the same lesson the Regularization module drew about <span class="arithmatex">\(\lambda\)</span>
+never landing on a suspiciously round number either.</p>
+<p>Now the number that actually matters: does matrix factorization beat the laziest possible baseline —
+guessing the global average rating for absolutely everything?</p>
+<div class="highlight"><pre><span></span><code><span class="n">P</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">matrix_factorization</span><span class="p">(</span><span class="n">R_train</span><span class="p">,</span> <span class="n">n_factors</span><span class="o">=</span><span class="n">best_f</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">reg</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">n_epochs</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+<span class="n">predicted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">P</span> <span class="o">@</span> <span class="n">Q</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">mf_rmse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">predicted</span><span class="p">[</span><span class="n">test_mask</span><span class="p">]</span> <span class="o">-</span> <span class="n">synthetic_ratings</span><span class="p">[</span><span class="n">test_mask</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+
+<span class="n">baseline_prediction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">R_train</span><span class="p">)</span>
+<span class="n">baseline_rmse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">baseline_prediction</span> <span class="o">-</span> <span class="n">synthetic_ratings</span><span class="p">[</span><span class="n">test_mask</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;global-mean baseline RMSE: </span><span class="si">{</span><span class="n">baseline_rmse</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;matrix factorization RMSE: </span><span class="si">{</span><span class="n">mf_rmse</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;error reduction: </span><span class="si">{</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">mf_rmse</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">baseline_rmse</span><span class="p">)</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>global-mean baseline RMSE: 0.957
+matrix factorization RMSE: 0.443
+error reduction: 54%
+</code></pre></div>
+<p>A real, substantial improvement over "just guess the average" — earned entirely from a handful of latent
+numbers per user and per item, fit only to the ratings that happened to be observed. That comparison against
+a naive baseline is not optional theatre: it's the same discipline the Evaluation Metrics module insisted on
+for classifiers (always know what the lazy always-predict-the-majority-class model scores), applied here to
+regression-flavoured predictions instead.</p>
+<hr />
+<h2 id="7-the-library-shortcut-and-why-it-needs-a-caveat-here">7. The library shortcut — and why it needs a caveat here</h2>
+<p>scikit-learn ships matrix factorization too, as <code>sklearn.decomposition.NMF</code> (non-negative matrix
+factorization — a good fit, since ratings are naturally non-negative). One line replaces Section 5's entire
+training loop:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># A fresh, small, and deliberately COMPLETE ratings table -- NMF has no notion of &quot;missing,&quot; so every</span>
+<span class="c1"># cell here is a real rating, unlike the sparse `ratings` matrix everywhere else in this notebook</span>
+<span class="n">dense_users</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Alice&quot;</span><span class="p">,</span> <span class="s2">&quot;Bob&quot;</span><span class="p">,</span> <span class="s2">&quot;Frank&quot;</span><span class="p">,</span> <span class="s2">&quot;Carol&quot;</span><span class="p">,</span> <span class="s2">&quot;Grace&quot;</span><span class="p">,</span> <span class="s2">&quot;Judy&quot;</span><span class="p">]</span>
+<span class="n">dense_movies</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;The Matrix&quot;</span><span class="p">,</span> <span class="s2">&quot;Mad Max: Fury Road&quot;</span><span class="p">,</span> <span class="s2">&quot;The Hangover&quot;</span><span class="p">,</span> <span class="s2">&quot;The Notebook&quot;</span><span class="p">]</span>
+<span class="n">dense_ratings</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">[[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+     <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+     <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+     <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+     <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+     <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">]],</span>
+    <span class="n">index</span><span class="o">=</span><span class="n">dense_users</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">dense_movies</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dense_ratings</span><span class="p">)</span>
+
+<span class="n">nmf</span> <span class="o">=</span> <span class="n">NMF</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="s2">&quot;nndsvda&quot;</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+<span class="n">user_factors</span> <span class="o">=</span> <span class="n">nmf</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">dense_ratings</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+<span class="n">item_factors</span> <span class="o">=</span> <span class="n">nmf</span><span class="o">.</span><span class="n">components_</span>
+
+<span class="n">reconstruction</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">user_factors</span> <span class="o">@</span> <span class="n">item_factors</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">dense_users</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">dense_movies</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">reconstructed ratings:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">reconstruction</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">reconstruction RMSE: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">dense_ratings</span><span class="o">.</span><span class="n">values</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">reconstruction</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>       The Matrix  Mad Max: Fury Road  The Hangover  The Notebook
+Alice           5                   5             1             2
+Bob             4                   4             2             2
+Frank           5                   4             2             2
+Carol           2                   1             4             5
+Grace           1                   1             4             5
+Judy            2                   2             5             4
+
+reconstructed ratings:
+       The Matrix  Mad Max: Fury Road  The Hangover  The Notebook
+Alice         5.2                 4.8           1.4           1.7
+Bob           4.1                 3.8           1.8           2.1
+Frank         4.7                 4.3           1.9           2.2
+Carol         1.7                 1.3           4.4           4.7
+Grace         1.2                 0.8           4.4           4.7
+Judy          2.2                 1.8           4.3           4.6
+
+reconstruction RMSE: 0.314
+</code></pre></div>
+<p>Notice the setup: <code>dense_ratings</code> deliberately picked six users and four movies where <strong>every cell is
+filled</strong>, because <code>NMF.fit_transform</code> has no concept of "missing" — hand it a matrix with <code>NaN</code>s and it will
+either error out or, worse, silently treat a missing rating as a real value of zero, actively training the
+model to predict that a user <em>hates</em> something they simply never rated. That's precisely the mistake
+Section 5's masking (<code>* mask</code> on the error, every single update) exists to prevent. <code>NMF</code> is the right tool
+the moment your matrix happens to be complete — image data, term-frequency tables, anything without
+structural missingness — and the wrong one to reach for blind on a real ratings matrix, which is why this
+module built the masked version by hand first, rather than starting here.</p>
+<hr />
+<h2 id="8-where-recommenders-struggle">8. Where recommenders struggle</h2>
+<p>Three practical failure modes worth knowing about, none of which today's from-scratch implementations solve:</p>
+<ul>
+<li><strong>The cold-start problem.</strong> A new user has no ratings, so collaborative filtering has nothing to compare
+  them against; a new item has no ratings, so it can't surface as anyone's "similar item." Content-based
+  filtering only half-fixes this — a new <em>item</em> with known features can still be recommended, but a new
+  <em>user</em> is still a blank slate until they rate something. Production systems typically fall back to
+  popularity-based recommendations ("trending now") until enough signal accumulates.</li>
+<li><strong>Popularity bias.</strong> Both collaborative filtering and matrix factorization are pulled toward whatever
+  already has the most ratings, since that's where the strongest signal lives — a rich-get-richer dynamic
+  that can crowd out genuinely good but under-rated items, and narrow what a whole platform's users end up
+  seeing.</li>
+<li><strong>Scale.</strong> A real platform's user-item matrix has millions of rows and columns, at 99%+ sparsity. Section
+  4's neighbour search over the <em>entire</em> matrix stops being remotely feasible; Section 5's factor vectors —
+  a fixed, small size per user or item, computed once — are exactly why matrix factorization (and its modern
+  descendants, deep-learning-based embeddings among them) dominates in practice.</li>
+</ul>
+<p>None of these are solved by a bigger dataset or more latent factors — they're structural to the problem, and
+production systems typically combine several techniques (<strong>hybrid recommenders</strong>) precisely to cover each
+approach's blind spots with another approach's strength.</p>
+<hr />
+<h2 id="9-your-turn">9. Your turn</h2>
+<p>Add cells below each exercise. Exercises 2 and 4 are the ones that consolidate the big ideas.</p>
+<p><strong>Exercise 1 — A new user profile.</strong>
+Add yourself as an eleventh user: rate four or five of the ten movies honestly, leave the rest <code>NaN</code>, and run
+Section 3's <code>content_based_recommend</code> on your own row. Do the recommendations feel right? Which genre in
+<code>genres</code> is doing the most work in your profile vector?</p>
+<p><strong>Exercise 2 — How much does <span class="arithmatex">\(k\)</span> matter in user-based CF?</strong>
+Section 4's <code>predict_rating_user_based</code> defaults to <code>k=3</code> neighbours. Rerun the three leave-one-out checks
+with <code>k=1</code>, <code>k=5</code>, and <code>k=9</code> (all users). How does the prediction change as <span class="arithmatex">\(k\)</span> grows, and why does averaging
+over <em>more</em> neighbours pull every prediction closer to that user's own mean rating?</p>
+<p><strong>Exercise 3 — Item-based leave-one-out.</strong>
+Section 4 only validated user-based predictions. Write the item-based equivalent of
+<code>predict_rating_user_based</code> (swap which axis you compute similarity over) and run the same three leave-one-out
+checks from Section 4. Does item-based or user-based come closer to the true ratings on this dataset?</p>
+<p><strong>Exercise 4 — Regularization strength in matrix factorization.</strong>
+Section 6 fixed <code>reg=0.3</code>. Sweep <code>reg</code> over <code>[0.01, 0.1, 0.3, 1.0, 3.0]</code> at the best <code>f</code> found, holding
+everything else fixed, and plot test RMSE against <code>reg</code> on a log-x axis. Relate the shape of this curve to
+the Regularization module's <span class="arithmatex">\(\lambda\)</span> sweep — is it the same U-shape, and does the same "rent on coefficients"
+story explain both ends of it?</p>
+<p><strong>Exercise 5 — Popularity bias, measured.</strong>
+Using the Section 6 synthetic dataset, count how many <em>training</em> ratings each item received. Then check
+whether <code>matrix_factorization</code>'s per-item prediction error (RMSE restricted to that item's test entries)
+correlates with how many training ratings that item had. Does the model perform worse on the "coldest" items,
+exactly as Section 8 predicted?</p>
+<hr />
+<h2 id="10-if-you-remember-nothing-else">10. If you remember nothing else</h2>
+<ol>
+<li>
+<p>A recommender's job is filling in a mostly-empty <strong>user-item matrix</strong> — most of what you'd want to know
+   about most users' opinions of most items, you simply don't have. That <strong>sparsity</strong> is the central
+   constraint every technique in this module works around.</p>
+</li>
+<li>
+<p><strong>Content-based filtering</strong> recommends by item-feature similarity (K-Nearest Neighbors' logic, applied to
+   items); <strong>collaborative filtering</strong> recommends by rating-<em>pattern</em> similarity, ignoring item features
+   entirely. They can and do agree — a sign the structure they've each found is real — but they fail in
+   opposite situations: content-based handles new items and struggles with new users; collaborative filtering
+   is the reverse.</p>
+</li>
+<li>
+<p><strong>User-based and item-based collaborative filtering</strong> both reduce to a similarity-weighted average of
+   known ratings; <strong>leave-one-out validation</strong> (hide a known rating, predict it, compare) is how you check
+   whether that average is actually any good.</p>
+</li>
+<li>
+<p><strong>Matrix factorization</strong> learns a small latent-factor vector per user and per item so that their dot
+   product reconstructs known ratings — trained by the Gradient Descent module's exact machinery, with one
+   crucial change: the loss sums over <strong>observed entries only</strong>, which is what makes it work on a sparse
+   matrix at all.</p>
+</li>
+<li>
+<p>The number of latent factors is a hyperparameter chosen by a <strong>validation curve</strong>, the same U-shaped
+   bias-variance trade-off the Regularization module drew for <span class="arithmatex">\(\lambda\)</span> and the K-Means module drew for <span class="arithmatex">\(K\)</span>.</p>
+</li>
+<li>
+<p>Always compare against a <strong>naive baseline</strong> (the global mean rating) — a real improvement over "just guess
+   the average" is the actual bar a recommender needs to clear, not zero.</p>
+</li>
+<li>
+<p>A library shortcut (<code>sklearn.decomposition.NMF</code>) exists, but it assumes a <strong>complete</strong> matrix — feeding it
+   a sparse ratings matrix with missing values silently trains it to treat "never rated" as "rated zero,"
+   which is precisely wrong. Know what a library function assumes before reaching for it.</p>
+</li>
+<li>
+<p><strong>Cold start</strong>, <strong>popularity bias</strong>, and <strong>scale</strong> are structural limitations, not bugs to patch with more
+   data or more factors — which is why production recommenders are usually <strong>hybrids</strong>, combining several
+   techniques to cover each other's blind spots.</p>
+</li>
+</ol>
+<hr />
+<h2 id="11-further-reading-and-glossary">11. Further reading and glossary</h2>
+<h3 id="further-reading">Further reading</h3>
+<ul>
+<li>Yehuda Koren, Robert Bell &amp; Chris Volinsky (2009), <a href="https://datajobs.com/data-science-repo/Recommender-Systems-[Netflix].pdf"><em>Matrix Factorization Techniques for Recommender
+  Systems</em></a> — the paper that came
+  out of the Netflix Prize, and the clearest applied account of Section 5-6's ideas at production scale.</li>
+<li>scikit-learn's guide to <a href="https://scikit-learn.org/stable/modules/decomposition.html#nmf">decomposition</a>
+  — the full <code>NMF</code> API used in Section 7, including its non-negativity constraint and initialization options.</li>
+<li><a href="https://grouplens.org/datasets/movielens/">MovieLens</a> — the standard small-to-large real ratings datasets
+  (the ml-latest-small set is a natural next step: 100,000 real ratings, small enough to explore quickly)
+  used across most published recommender-systems research and tutorials.</li>
+<li>Francesco Ricci, Lior Rokach &amp; Bracha Shapira (eds.), <em>Recommender Systems Handbook</em> (Springer) — a
+  comprehensive reference covering content-based, collaborative, hybrid and evaluation methods in full depth.</li>
+<li>Xavier Amatriain's <a href="https://www.slideshare.net/xamat/recommender-systems-machine-learning-summer-school-2014-cmu">lecture notes on recommender systems</a>
+  — a widely-cited applied overview of the cold-start and popularity-bias problems Section 8 introduced.</li>
+</ul>
+<h3 id="glossary">Glossary</h3>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>User-item matrix</td>
+<td>The table of users (rows) by items (columns) whose cells are ratings; the object every recommender fills in.</td>
+</tr>
+<tr>
+<td>Sparsity</td>
+<td>The fraction of a user-item matrix with no observed rating; typically 99%+ in real systems.</td>
+</tr>
+<tr>
+<td>Explicit feedback</td>
+<td>A user directly stating their opinion (a star rating, thumbs up/down).</td>
+</tr>
+<tr>
+<td>Implicit feedback</td>
+<td>Preference inferred from behaviour (clicks, watch time, purchases) rather than stated directly.</td>
+</tr>
+<tr>
+<td>Content-based filtering</td>
+<td>Recommending items whose features resemble items a user already liked.</td>
+</tr>
+<tr>
+<td>Collaborative filtering</td>
+<td>Recommending based on similarity between rating <em>patterns</em>, ignoring item features.</td>
+</tr>
+<tr>
+<td>Cold-start problem</td>
+<td>The difficulty of recommending for a new user or item with no rating history yet.</td>
+</tr>
+<tr>
+<td>User-based CF</td>
+<td>Predicting a rating from the ratings of users with similar rating patterns.</td>
+</tr>
+<tr>
+<td>Item-based CF</td>
+<td>Predicting a rating from the ratings of items with similar rating patterns.</td>
+</tr>
+<tr>
+<td>Leave-one-out validation</td>
+<td>Hiding a known value, predicting it as if unknown, and comparing to check a method's accuracy.</td>
+</tr>
+<tr>
+<td>Matrix factorization</td>
+<td>Learning low-dimensional latent vectors per user and per item whose dot product reconstructs ratings.</td>
+</tr>
+<tr>
+<td>Latent factor</td>
+<td>A learned, unlabelled dimension of user/item variation discovered by matrix factorization.</td>
+</tr>
+<tr>
+<td>Masking</td>
+<td>Restricting a loss function to only the observed entries of a sparse matrix.</td>
+</tr>
+<tr>
+<td><code>NMF</code></td>
+<td>Non-negative matrix factorization; scikit-learn's library implementation, requiring a complete matrix.</td>
+</tr>
+<tr>
+<td>Popularity bias</td>
+<td>A recommender's tendency to favour already-popular items, since they carry the most signal.</td>
+</tr>
+<tr>
+<td>Hybrid recommender</td>
+<td>A system combining content-based, collaborative, and other techniques to offset each one's weaknesses.</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../15_kmeans_clustering/" class="btn btn-neutral float-left" title="K-Means Clustering"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../10_time_series_foundations/" class="btn btn-neutral float-right" title="Time Series Foundations">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2026 - Aayush Raj Regmi</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../15_kmeans_clustering/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../10_time_series_foundations/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
