@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>K-Means Clustering - DCS 404</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "K-Means Clustering";
+        var mkdocs_page_input_path = "DCS404/15_kmeans_clustering.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> DCS 404
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Welcome</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../InstallationGuide/">Installation Guide</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Machine Learning and AI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../01_introduction_to_machine_learning/">Introduction to Machine Learning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02_ml_workflow/">ML Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03_regression/">Regression</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04_gradient_descent/">Gradient Descent</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../05_regularization/">Regularization</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06_logistic_regression/">Classification & Logistic Regression</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07_decision_trees/">Decision Trees</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../08_evaluation_metrics/">Evaluation Metrics</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../09_knn/">K-Nearest Neighbors</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Unsupervised Learning</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">K-Means Clustering</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-work-through-this">How to work through this</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#learning-objectives">Learning objectives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#1-from-which-label-to-what-groups">1. From "which label?" to "what groups?"</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-the-k-means-algorithm">2. The K-Means algorithm</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-k-means-from-scratch">3. K-Means from scratch</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-why-initialization-matters-k-means">4. Why initialization matters: K-Means++</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-choosing-k-the-elbow-method-and-the-silhouette-score">5. Choosing \(K\): the elbow method and the silhouette score</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-real-data-clustering-diabetes-patients">6. Real data: clustering diabetes patients</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-where-k-means-struggles">7. Where K-Means struggles</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#8-your-turn">8. Your turn</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#9-if-you-remember-nothing-else">9. If you remember nothing else</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#10-further-reading-and-glossary">10. Further reading and glossary</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#further-reading">Further reading</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#glossary">Glossary</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Time Series Analysis</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../10_time_series_foundations/">Time Series Foundations</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../11_exponential_smoothing/">Exponential Smoothing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../12_arima_models/">ARIMA and SARIMA Models</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Deep Learning</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../13_neural_networks/">Neural Networks</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../14_pytorch_ann/">PyTorch and ANN</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Final Project</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../project/00_final_project/">Project Work</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">DCS 404</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Unsupervised Learning</li>
+      <li class="breadcrumb-item active">K-Means Clustering</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="unsupervised-learning-k-means-clustering">Unsupervised Learning: K-Means Clustering</h1>
+<p><strong>DCS 404 · Data Science and Machine Learning</strong></p>
+<hr />
+<p>Every model this course has built so far learned from an answer key. Linear regression had <code>sales</code>, logistic
+regression had <code>admit</code>, decision trees had <code>Outcome</code> — some column <span class="arithmatex">\(y\)</span> the model was trained to predict, and
+some notion of "correct" it was graded against. Today that answer key disappears. We're handed a table of
+features and nothing else, and the question changes from <em>what's the right label?</em> to <em>does this data have
+any structure at all — and if so, what does it look like?</em></p>
+<p>That's <strong>unsupervised learning</strong>, and <strong>clustering</strong> is its most common form: grouping observations so that
+similar ones end up together and dissimilar ones end up apart, with no labels to check our work against. This
+module covers <strong>K-Means</strong>, by far the most widely used clustering algorithm — simple enough to implement from
+scratch in a dozen lines, and the right first stop before the more exotic clustering methods (hierarchical,
+density-based) that build on the same core idea.</p>
+<h2 id="how-to-work-through-this">How to work through this</h2>
+<p>Run every code cell in order (<code>Shift + Enter</code>); later sections reuse the synthetic dataset built in Setup.
+This module leans on ideas from earlier in the course — Euclidean distance from the K-Nearest Neighbors
+module, feature standardisation from Gradient Descent, the train-many-models-and-compare-a-score pattern from
+Evaluation Metrics — without re-deriving any of them.</p>
+<p>One scope note: clustering is a big field, and this module deliberately covers <strong>one algorithm well</strong> rather
+than many algorithms shallowly. K-Means variants (K-Medoids, K-Modes, Mini-Batch K-Means) and entirely
+different clustering families (hierarchical, density-based) are real and useful, but they're future
+material — Section 7 points to exactly where they'd fit in.</p>
+<h2 id="learning-objectives">Learning objectives</h2>
+<p>After completing this module you will be able to:</p>
+<ul>
+<li>Explain what makes clustering <em>unsupervised</em>, and contrast it with the classification/regression problems
+  from earlier modules.</li>
+<li>State the K-Means objective function (inertia / sum of squared distances to centroid) and explain why it's
+  optimized by <strong>coordinate descent</strong> rather than gradient descent.</li>
+<li>Implement K-Means from scratch — assign, update, repeat — and verify it against scikit-learn.</li>
+<li>Explain why centroid initialization matters, and how <strong>K-Means++</strong> fixes the worst failures of random
+  initialization.</li>
+<li>Choose the number of clusters <span class="arithmatex">\(K\)</span> using the <strong>elbow method</strong> and the <strong>silhouette score</strong>.</li>
+<li>Apply K-Means to a real dataset and interpret the resulting clusters.</li>
+<li>Describe K-Means' key assumption (roughly spherical, similarly-sized clusters) and recognise when it fails.</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<p>Run this once. Libraries, the usual plotting style, and one synthetic dataset — four well-separated blobs —
+reused for most of this module.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_blobs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.cluster</span><span class="w"> </span><span class="kn">import</span> <span class="n">KMeans</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">StandardScaler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">silhouette_score</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+    <span class="s2">&quot;figure.figsize&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">),</span>
+    <span class="s2">&quot;figure.dpi&quot;</span><span class="p">:</span> <span class="mi">110</span><span class="p">,</span>
+    <span class="s2">&quot;axes.grid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">&quot;grid.alpha&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="s2">&quot;axes.spines.top&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;axes.spines.right&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;font.size&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_palette</span><span class="p">(</span><span class="s2">&quot;deep&quot;</span><span class="p">)</span>
+<span class="n">RANDOM_STATE</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># Four well-separated blobs -- small and synthetic on purpose, so every plot stays readable</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y_true</span> <span class="o">=</span> <span class="n">make_blobs</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">centers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">cluster_std</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> points, </span><span class="si">{</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> features, generated from </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">y_true</span><span class="p">))</span><span class="si">}</span><span class="s2"> true clusters&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:blue&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;The dataset for most of this module -- no labels, just points&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;feature 1&quot;</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;feature 2&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>300 points, 2 features, generated from 4 true clusters
+</code></pre></div>
+<p><img alt="png" src="../15_kmeans_clustering_files/15_kmeans_clustering_4_1.png" /></p>
+<hr />
+<h2 id="1-from-which-label-to-what-groups">1. From "which label?" to "what groups?"</h2>
+<p>Imagine visiting a zoo for the first time with no idea what any of the animals are called. You'd still
+notice that some animals live in water, some fly, some live underground — and without ever being told a
+single species name, you could sort the animals into sensible groups just from what you observe.</p>
+<div align="center">
+<img src="../assets/cluster_animal_grouping_analogy.png" height="320">
+
+*Figure 1 — Grouping by observed similarity, with no labels at all.*
+</div>
+
+<p>That's <strong>clustering</strong>: partitioning observations into groups so that points in the same group are similar
+and points in different groups are dissimilar — using only the features, never a label. It's the most common
+form of <strong>unsupervised learning</strong>, the branch of machine learning that finds structure in unlabeled data
+rather than predicting a known target.</p>
+<p>Clustering looks superficially like classification — both end with "this point belongs to group <span class="arithmatex">\(k\)</span>" — but
+the two solve different problems. Classification learns a boundary from examples that already carry the
+correct answer; clustering has no correct answer to learn from, only the geometry of the points themselves.
+That absence of ground truth will matter again in Section 5: without labels, "how good is this clustering?"
+becomes its own, genuinely harder question.</p>
+<p>Clustering algorithms come in several families, each built around a different notion of "similar":
+<strong>partition-based</strong> (today's topic — divide the data into <span class="arithmatex">\(K\)</span> groups, each represented by a centroid),
+<strong>hierarchical</strong> (build a tree of nested clusters, cut it wherever makes sense), and <strong>density-based</strong> (a
+cluster is any densely-packed region, however oddly shaped, separated from others by sparse space). This
+module focuses entirely on the first family — specifically <strong>K-Means</strong> — because it's the algorithm nearly
+every other clustering method is explained in contrast to.</p>
+<hr />
+<h2 id="2-the-k-means-algorithm">2. The K-Means algorithm</h2>
+<p>K-Means represents each of <span class="arithmatex">\(K\)</span> clusters by a single point — its <strong>centroid</strong> — and assigns every observation
+to whichever centroid is closest. Formally, given data points <span class="arithmatex">\(\mathbf x_1, \dots, \mathbf x_N\)</span>, K-Means finds
+cluster assignments <span class="arithmatex">\(\boldsymbol c\)</span> and centroids <span class="arithmatex">\(\boldsymbol \mu_1, \dots, \boldsymbol \mu_K\)</span> that minimise</p>
+<div class="arithmatex">\[\mathcal J = \sum_{k=1}^{K} \sum_{i:\, c_i = k} \left\| \mathbf x_i - \boldsymbol \mu_k \right\|_2^2\]</div>
+<p>— the total squared distance from every point to its own cluster's centroid. This quantity has a few
+names worth recognising in the wild: <strong>inertia</strong>, <strong>within-cluster sum of squares (WCSS)</strong>, or just the
+K-Means objective. Small <span class="arithmatex">\(\mathcal J\)</span> means every point sits close to its centroid — tight, compact clusters.</p>
+<p>Two unknowns sit inside <span class="arithmatex">\(\mathcal J\)</span> at once — the assignments <span class="arithmatex">\(\boldsymbol c\)</span> <em>and</em> the centroids
+<span class="arithmatex">\(\boldsymbol \mu\)</span> — and they depend on each other, which rules out plain gradient descent (there's no single
+gradient to follow when the thing you're optimizing over includes a discrete assignment). The fix is
+<strong>coordinate descent</strong>: fix one set of unknowns, optimize the other exactly, then swap. K-Means alternates two
+steps, each of which has a simple, exact solution:</p>
+<ol>
+<li><strong>Assign</strong> — with centroids fixed, send each point to its nearest centroid:
+   $<span class="arithmatex">\(c_i \leftarrow \underset{k}{\arg\min} \left\| \mathbf x_i - \boldsymbol \mu_k \right\|_2^2\)</span>$</li>
+<li><strong>Update</strong> — with assignments fixed, recompute each centroid as the mean of the points now assigned to it:
+   $<span class="arithmatex">\(\boldsymbol \mu_k \leftarrow \frac{1}{|\{i : c_i = k\}|} \sum_{i:\, c_i = k} \mathbf x_i\)</span>$</li>
+</ol>
+<p>Repeat until nothing changes. Each step can only decrease <span class="arithmatex">\(\mathcal J\)</span> (Step 1 by construction sends every
+point to its <em>closest</em> centroid; Step 2 by construction sets each centroid to the mean that <em>minimises</em>
+squared distance to its own cluster) — so <span class="arithmatex">\(\mathcal J\)</span> falls monotonically and the algorithm is guaranteed to
+converge, in finite steps, to <em>some</em> stable assignment. Not necessarily the best one, though — <span class="arithmatex">\(\mathcal J\)</span>
+is non-convex, so different starting points can converge to different (and sometimes much worse) stable
+points. Section 4 shows exactly how much that can matter.</p>
+<hr />
+<h2 id="3-k-means-from-scratch">3. K-Means from scratch</h2>
+<p>Assign, update, repeat — that's genuinely the whole algorithm. Let's write it directly from Section 2's two
+steps and check it against scikit-learn's implementation on the same data.</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">kmeans</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">n_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Lloyd&#39;s algorithm: assign points to the nearest centroid, recompute centroids, repeat.&#39;&#39;&#39;</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">centroids</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span>   <span class="c1"># Forgy init: k real data points</span>
+
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_iter</span><span class="p">):</span>
+        <span class="c1"># Assign step: distance from every point to every centroid, then the closest one</span>
+        <span class="n">distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">centroids</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">distances</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Update step: each centroid becomes the mean of the points now assigned to it</span>
+        <span class="n">new_centroids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">X</span><span class="p">[</span><span class="n">labels</span> <span class="o">==</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">)])</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">new_centroids</span><span class="p">,</span> <span class="n">centroids</span><span class="p">):</span>   <span class="c1"># nothing moved -- converged</span>
+            <span class="k">break</span>
+        <span class="n">centroids</span> <span class="o">=</span> <span class="n">new_centroids</span>
+
+    <span class="n">inertia</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">X</span><span class="p">[</span><span class="n">labels</span> <span class="o">==</span> <span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">centroids</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">centroids</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">inertia</span>
+
+<span class="n">centroids</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">inertia</span> <span class="o">=</span> <span class="n">kmeans</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;from-scratch inertia: </span><span class="si">{</span><span class="n">inertia</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">sk_model</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">,</span> <span class="n">n_init</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;scikit-learn inertia: </span><span class="si">{</span><span class="n">sk_model</span><span class="o">.</span><span class="n">inertia_</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>from-scratch inertia: 454.38
+scikit-learn inertia: 454.38
+</code></pre></div>
+<p>The two numbers match to several decimal places — our dozen-line implementation is doing exactly what
+scikit-learn's <code>KMeans</code> does internally (which is itself called <strong>Lloyd's algorithm</strong>, after the 1957/1982
+paper that first described it). Let's look at what it actually found.</p>
+<div class="highlight"><pre><span></span><code><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">4.8</span><span class="p">))</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:blue&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Before: no assignments, no centroids&quot;</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;tab10&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">centroids</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">centroids</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+                <span class="n">c</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;centroids&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;After: </span><span class="si">{</span><span class="mi">4</span><span class="si">}</span><span class="s2"> clusters, inertia = </span><span class="si">{</span><span class="n">inertia</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">:</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;feature 1&quot;</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;feature 2&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../15_kmeans_clustering_files/15_kmeans_clustering_10_0.png" /></p>
+<p>Four tight, well-separated groups, each with a centroid sitting at its visual centre — exactly what we'd
+sketch by eye on this data. That's a fair test, though: these blobs were generated to be easy. Section 6
+brings in a real dataset where the "right" grouping isn't obvious just from looking.</p>
+<hr />
+<h2 id="4-why-initialization-matters-k-means">4. Why initialization matters: K-Means++</h2>
+<p><code>kmeans</code> above starts from <span class="arithmatex">\(K\)</span> randomly chosen data points (<strong>Forgy initialization</strong>) and never looks back.
+Section 2 already flagged the risk: coordinate descent only guarantees <em>a</em> stable point, not <em>the best</em> one.
+Let's force a bad draw and watch what happens.</p>
+<div class="highlight"><pre><span></span><code><span class="n">random_init</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="s2">&quot;random&quot;</span><span class="p">,</span> <span class="n">n_init</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">smart_init</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="s2">&quot;k-means++&quot;</span><span class="p">,</span> <span class="n">n_init</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">4.8</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="p">[</span><span class="n">random_init</span><span class="p">,</span> <span class="n">smart_init</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;random init&quot;</span><span class="p">,</span> <span class="s2">&quot;k-means++ init&quot;</span><span class="p">]):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">labels_</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;tab10&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">cluster_centers_</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">model</span><span class="o">.</span><span class="n">cluster_centers_</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+               <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s2">inertia = </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">inertia_</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;feature 1&quot;</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;feature 2&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;feature 2&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;random init inertia:    </span><span class="si">{</span><span class="n">random_init</span><span class="o">.</span><span class="n">inertia_</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;k-means++ init inertia: </span><span class="si">{</span><span class="n">smart_init</span><span class="o">.</span><span class="n">inertia_</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../15_kmeans_clustering_files/15_kmeans_clustering_13_0.png" /></p>
+<div class="highlight"><pre><span></span><code>random init inertia:    746.6
+k-means++ init inertia: 454.4
+</code></pre></div>
+<p>Same data, same <span class="arithmatex">\(K\)</span>, same number of iterations to converge — a single unlucky starting draw left two
+centroids fighting over one cluster while a different cluster got none of its own, and coordinate descent
+dutifully converged to that arrangement anyway, because nothing <em>local</em> told it to do otherwise.</p>
+<p><strong>K-Means++</strong> fixes this by making initialization itself a little smarter, without touching the assign/update
+loop at all:</p>
+<ol>
+<li>Pick the first centroid uniformly at random from the data.</li>
+<li>For every other point, compute its squared distance to the <em>nearest centroid chosen so far</em>.</li>
+<li>Pick the next centroid randomly, but weighted so that far-away points are more likely to be chosen.</li>
+<li>Repeat 2-3 until <span class="arithmatex">\(K\)</span> centroids are chosen.</li>
+</ol>
+<p>The effect is centroids that start out spread across the data rather than clumped together by chance — points
+far from every existing centroid are exactly the points most likely to belong to a cluster that has no
+centroid yet. It's still random (so still not a global-optimum guarantee), but the failure mode above becomes
+far less likely. It's also scikit-learn's <strong>default</strong>: plain <code>KMeans(n_clusters=k)</code> already uses
+<code>init="k-means++"</code> unless told otherwise, and in practice is run several times from different seeds anyway
+(<code>n_init</code>, default 10 in recent scikit-learn), keeping whichever run reaches the lowest inertia. From here on,
+every <code>KMeans</code> call in this module leaves both settings at their defaults.</p>
+<hr />
+<h2 id="5-choosing-k-the-elbow-method-and-the-silhouette-score">5. Choosing <span class="arithmatex">\(K\)</span>: the elbow method and the silhouette score</h2>
+<p>Every example so far quietly assumed <span class="arithmatex">\(K=4\)</span> — because we generated the data and already knew the answer. Real
+data never comes with a "true number of clusters" label attached, and that absence of ground truth is the
+central difficulty Section 1 warned about: K-Means will happily produce <em>some</em> clustering for any <span class="arithmatex">\(K\)</span> you
+hand it, correct or not.</p>
+<p>One number that will <strong>not</strong> help: inertia alone. It decreases every single time <span class="arithmatex">\(K\)</span> grows — push <span class="arithmatex">\(K\)</span> all
+the way to <span class="arithmatex">\(N\)</span> (one cluster per point) and inertia hits exactly zero, which is obviously not a useful
+clustering. What inertia's <em>shape</em> can tell us is when adding another cluster stops buying much:</p>
+<div align="center">
+<img src="../assets/cluster_workflow_pipeline.png" width="640">
+
+*Figure 2 — The clustering workflow: Sections 2-4 built the "Clustering Algorithm" box, this section is
+"Cluster Validation," and Section 6 is "Result Interpretation."*
+</div>
+
+<div class="highlight"><pre><span></span><code><span class="n">Ks</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
+<span class="n">inertias</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">silhouettes</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">Ks</span><span class="p">:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">,</span> <span class="n">n_init</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">inertias</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">inertia_</span><span class="p">)</span>
+    <span class="n">silhouettes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">silhouette_score</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">labels_</span><span class="p">))</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Ks</span><span class="p">,</span> <span class="n">inertias</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;$K$&quot;</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;inertia&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Elbow method&quot;</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Ks</span><span class="p">,</span> <span class="n">silhouettes</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:orange&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;$K$&quot;</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;silhouette score&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Silhouette method&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">best_k</span> <span class="o">=</span> <span class="n">Ks</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">silhouettes</span><span class="p">))]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;silhouette score peaks at K = </span><span class="si">{</span><span class="n">best_k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../15_kmeans_clustering_files/15_kmeans_clustering_16_0.png" /></p>
+<div class="highlight"><pre><span></span><code>silhouette score peaks at K = 4
+</code></pre></div>
+<p>The <strong>elbow method</strong> looks for the point where the inertia curve stops falling steeply and starts to flatten
+— the "elbow" — reasoning that clusters beyond that point are splitting real structure into pieces rather
+than capturing anything new. It's a judgment call read off a picture, which is exactly its weakness: not
+every dataset produces an obvious elbow.</p>
+<p>The <strong>silhouette score</strong> is a real number, not a picture, and it doesn't need inertia's "always decreasing"
+caveat. For a single point <span class="arithmatex">\(\mathbf x_i\)</span>, define <span class="arithmatex">\(a(\mathbf x_i)\)</span> as its mean distance to every other point in
+its <em>own</em> cluster (small = tightly packed), and <span class="arithmatex">\(b(\mathbf x_i)\)</span> as its mean distance to the points of the
+<em>nearest other</em> cluster (large = well separated from its neighbours). The silhouette coefficient is</p>
+<div class="arithmatex">\[s(\mathbf x_i) = \frac{b(\mathbf x_i) - a(\mathbf x_i)}{\max\left(a(\mathbf x_i), b(\mathbf x_i)\right)}\]</div>
+<p>which lives in <span class="arithmatex">\([-1, 1]\)</span>: close to <span class="arithmatex">\(1\)</span> means a point sits comfortably inside its own tight cluster, far from
+any other; close to <span class="arithmatex">\(0\)</span> means it's sitting right on a boundary; negative means it's arguably in the <em>wrong</em>
+cluster. <code>silhouette_score</code> averages <span class="arithmatex">\(s(\mathbf x_i)\)</span> over every point, giving one number per value of <span class="arithmatex">\(K\)</span> —
+and here it peaks exactly at the true <span class="arithmatex">\(K=4\)</span>, agreeing with both the elbow and the ground truth we generated
+the data with.</p>
+<hr />
+<h2 id="6-real-data-clustering-diabetes-patients">6. Real data: clustering diabetes patients</h2>
+<p>The <strong>Pima Indians Diabetes dataset</strong> returns from the Classification module — 768 patients, each with
+physiological measurements and a <code>diabetes / no diabetes</code> label. Last time, that label was the target a
+classifier learned to predict. This time we throw it away entirely and ask a different question: <strong>ignoring
+the outcome, does K-Means find any natural grouping in the measurements themselves?</strong></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_csv</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;data/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;notebooks/data/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)]:</span>
+        <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">diabetes</span> <span class="o">=</span> <span class="n">load_csv</span><span class="p">(</span><span class="s2">&quot;diabetes.csv&quot;</span><span class="p">)</span>
+<span class="n">features</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Glucose&quot;</span><span class="p">,</span> <span class="s2">&quot;BMI&quot;</span><span class="p">,</span> <span class="s2">&quot;Age&quot;</span><span class="p">,</span> <span class="s2">&quot;BloodPressure&quot;</span><span class="p">]</span>
+<span class="n">X_diab</span> <span class="o">=</span> <span class="n">diabetes</span><span class="p">[</span><span class="n">features</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+<span class="c1"># Standardise -- Glucose (0-199) and Age (21-81) live on very different scales,</span>
+<span class="c1"># and K-Means&#39; Euclidean distance treats every feature&#39;s units as equally important</span>
+<span class="n">X_diab_scaled</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_diab</span><span class="p">)</span>
+
+<span class="n">diab_Ks</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+<span class="n">diab_silhouettes</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">silhouette_score</span><span class="p">(</span><span class="n">X_diab_scaled</span><span class="p">,</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">,</span> <span class="n">n_init</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_diab_scaled</span><span class="p">)</span><span class="o">.</span><span class="n">labels_</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">diab_Ks</span>
+<span class="p">]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">diab_Ks</span><span class="p">,</span> <span class="n">diab_silhouettes</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;$K$&quot;</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;silhouette score&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Choosing K for the diabetes measurements&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">diab_Ks</span><span class="p">,</span> <span class="n">diab_silhouettes</span><span class="p">)})</span>
+</code></pre></div>
+<p><img alt="png" src="../15_kmeans_clustering_files/15_kmeans_clustering_19_0.png" /></p>
+<div class="highlight"><pre><span></span><code>{2: 0.264, 3: 0.299, 4: 0.285, 5: 0.24, 6: 0.236}
+</code></pre></div>
+<p>Real data rarely hands you as clean an answer as the synthetic blobs did. The silhouette score edges slightly
+higher at <span class="arithmatex">\(K=3\)</span> than <span class="arithmatex">\(K=2\)</span>, but the two are close, and <span class="arithmatex">\(K=2\)</span> produces a split simple enough to actually
+interpret — a good reminder that the highest score on a chart is a <em>suggestion</em>, not a verdict; domain
+judgment about what's useful still gets a vote. Let's fit <span class="arithmatex">\(K=2\)</span> and see what it found.</p>
+<div class="highlight"><pre><span></span><code><span class="n">kmeans_diab</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">,</span> <span class="n">n_init</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_diab_scaled</span><span class="p">)</span>
+<span class="n">diabetes</span><span class="p">[</span><span class="s2">&quot;cluster&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kmeans_diab</span><span class="o">.</span><span class="n">labels_</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">diabetes</span><span class="p">[</span><span class="s2">&quot;Glucose&quot;</span><span class="p">],</span> <span class="n">diabetes</span><span class="p">[</span><span class="s2">&quot;BMI&quot;</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">diabetes</span><span class="p">[</span><span class="s2">&quot;cluster&quot;</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;coolwarm&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Glucose&quot;</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;BMI&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Two patient clusters, found without ever looking at the diagnosis&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">diabetes</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;cluster&quot;</span><span class="p">)[</span><span class="n">features</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../15_kmeans_clustering_files/15_kmeans_clustering_21_0.png" /></p>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Glucose</th>
+      <th>BMI</th>
+      <th>Age</th>
+      <th>BloodPressure</th>
+    </tr>
+    <tr>
+      <th>cluster</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>104.4</td>
+      <td>29.8</td>
+      <td>27.0</td>
+      <td>61.8</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>142.9</td>
+      <td>34.9</td>
+      <td>41.6</td>
+      <td>78.8</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>One cluster runs consistently higher on every one of these four measurements than the other — K-Means found
+a real physiological split using nothing but distances in feature space. Now, and only now, let's check it
+against the diagnosis we deliberately withheld:</p>
+<div class="highlight"><pre><span></span><code><span class="n">crosstab</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">crosstab</span><span class="p">(</span><span class="n">diabetes</span><span class="p">[</span><span class="s2">&quot;cluster&quot;</span><span class="p">],</span> <span class="n">diabetes</span><span class="p">[</span><span class="s2">&quot;Outcome&quot;</span><span class="p">])</span>
+<span class="n">crosstab</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;no diabetes&quot;</span><span class="p">,</span> <span class="s2">&quot;diabetes&quot;</span><span class="p">]</span>
+<span class="n">crosstab</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;cluster </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">crosstab</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">crosstab</span><span class="p">)</span>
+
+<span class="n">diabetes_rate</span> <span class="o">=</span> <span class="n">diabetes</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;cluster&quot;</span><span class="p">)[</span><span class="s2">&quot;Outcome&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">cluster_id</span><span class="p">,</span> <span class="n">rate</span> <span class="ow">in</span> <span class="n">diabetes_rate</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cluster </span><span class="si">{</span><span class="n">cluster_id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">rate</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2"> of patients have diabetes&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>           no diabetes  diabetes
+cluster 0          356        83
+cluster 1          144       185
+cluster 0: 18.9% of patients have diabetes
+cluster 1: 56.2% of patients have diabetes
+</code></pre></div>
+<p>The cluster with the <em>higher</em> Glucose/BMI/Age/BloodPressure profile also has the far higher diabetes rate —
+unsupervised structure, discovered with zero access to the label, lines up with a diagnosis that carries real
+clinical meaning. That's not a coincidence and it's not magic: diabetes risk genuinely correlates with these
+measurements, so a grouping built purely from their geometry was always likely to shadow it. This is exactly
+how clustering earns its keep in practice — as an exploratory tool that surfaces structure worth
+investigating further, not as a replacement for the labelled classifier from the Classification module.</p>
+<hr />
+<h2 id="7-where-k-means-struggles">7. Where K-Means struggles</h2>
+<p>K-Means' assign step always draws a straight-line (Euclidean) boundary between neighbouring centroids, which
+bakes in an assumption worth stating plainly: it works best when clusters are <strong>roughly round and similar in
+size</strong>. Real structure that violates that assumption breaks it, visibly.</p>
+<div class="highlight"><pre><span></span><code><span class="n">X_round</span><span class="p">,</span> <span class="n">y_round</span> <span class="o">=</span> <span class="n">make_blobs</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">centers</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">170</span><span class="p">)</span>
+<span class="n">stretch</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.6</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.6</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">]]</span>     <span class="c1"># a linear transform that stretches the blobs diagonally</span>
+<span class="n">X_stretched</span> <span class="o">=</span> <span class="n">X_round</span> <span class="o">@</span> <span class="n">stretch</span>
+
+<span class="n">kmeans_stretched</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">,</span> <span class="n">n_init</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_stretched</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">4.8</span><span class="p">))</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X_stretched</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">X_stretched</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">y_round</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;tab10&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;The actual structure in the data&quot;</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X_stretched</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">X_stretched</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">kmeans_stretched</span><span class="o">.</span><span class="n">labels_</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;tab10&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">kmeans_stretched</span><span class="o">.</span><span class="n">cluster_centers_</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">kmeans_stretched</span><span class="o">.</span><span class="n">cluster_centers_</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;What K-Means found&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">:</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;feature 1&quot;</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;feature 2&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../15_kmeans_clustering_files/15_kmeans_clustering_26_0.png" /></p>
+<p>The left panel is the true structure — three elongated, diagonal clusters. The right panel is K-Means'
+answer with the correct <span class="arithmatex">\(K=3\)</span>: it slices straight through clusters that are genuinely stretched, because a
+centroid-and-Euclidean-distance model can only ever draw round-ish decision regions, no matter how well <span class="arithmatex">\(K\)</span>
+is chosen or how carefully centroids are initialised. This isn't a bug to patch with a better seed — it's the
+algorithm's central assumption showing its limit.</p>
+<p>A few other situations worth knowing about, without needing to solve them today:</p>
+<ul>
+<li><strong>Outliers</strong> distort centroids badly, since a centroid is a <em>mean</em>, and means are notoriously sensitive to
+  extreme values (the same reason the Regression module cared about outliers). K-Medoids — using an actual
+  data point, the <em>medoid</em>, as each cluster's representative instead of a computed mean — is the standard fix.</li>
+<li><strong>Unscaled features</strong> silently let whichever feature has the largest numeric range dominate every distance
+  calculation. Section 6 standardised the diabetes features for exactly this reason — the same lesson the
+  Gradient Descent module taught about optimization applies just as directly to distance-based clustering.</li>
+<li><strong>Non-round clusters</strong>, as just demonstrated, are where <strong>density-based</strong> methods (DBSCAN and relatives)
+  take over — they define a cluster as a dense region of any shape, with no centroid and no assumption of
+  roundness at all. <strong>Hierarchical clustering</strong> sidesteps choosing <span class="arithmatex">\(K\)</span> upfront entirely, building a full tree
+  of nested clusters and letting you pick the cut afterward. Both are natural next modules once K-Means feels
+  comfortable.</li>
+</ul>
+<hr />
+<h2 id="8-your-turn">8. Your turn</h2>
+<p>Add cells below each exercise. Exercises 2 and 4 are the ones that consolidate the big ideas.</p>
+<p><strong>Exercise 1 — Verify the update step by hand.</strong>
+Take the <code>centroids</code> and <code>labels</code> from Section 3's <code>kmeans(X, k=4)</code> run. For cluster <code>0</code>, manually compute
+<code>X[labels == 0].mean(axis=0)</code> and confirm it matches <code>centroids[0]</code>. Explain in one sentence why this must
+always be true the moment the loop has converged.</p>
+<p><strong>Exercise 2 — How much does a bad seed cost, on average?</strong>
+Section 4 showed one dramatic random-init failure at <code>random_state=5</code>. Loop <code>random_state</code> from 0 to 29 with
+<code>init="random", n_init=1</code>, record each run's inertia, and compare the distribution against the same sweep with
+<code>init="k-means++"</code>. What fraction of random-init runs land more than 20% above the best k-means++ run?</p>
+<p><strong>Exercise 3 — Silhouette by hand for one point.</strong>
+Pick any single point from the Section 5 blobs at <span class="arithmatex">\(K=4\)</span>. Manually compute <span class="arithmatex">\(a(\mathbf x_i)\)</span> (mean distance to
+its own cluster) and <span class="arithmatex">\(b(\mathbf x_i)\)</span> (mean distance to the nearest other cluster) using NumPy, then compute
+<span class="arithmatex">\(s(\mathbf x_i)\)</span> and check it against <code>sklearn.metrics.silhouette_samples(X, labels)[i]</code>.</p>
+<p><strong>Exercise 4 — Cluster the full diabetes feature set.</strong>
+Section 6 used only four of the eight diabetes features. Refit K-Means (with standardisation) on all eight,
+re-run the silhouette sweep, and compare the chosen <span class="arithmatex">\(K\)</span> and the resulting cluster-vs-Outcome crosstab against
+Section 6's result. Did more features sharpen the split or blur it?</p>
+<p><strong>Exercise 5 — Watch K-Means fail on circles.</strong>
+Generate two concentric circles with <code>sklearn.datasets.make_circles(n_samples=300, noise=0.05, factor=0.5)</code>
+and fit K-Means with <code>K=2</code>. Plot the result. Explain, using Section 7's "roughly round, similarly sized"
+assumption, exactly why K-Means cannot succeed here no matter how it's initialised — and what a density-based
+method would need to look at instead of centroids to get it right.</p>
+<hr />
+<h2 id="9-if-you-remember-nothing-else">9. If you remember nothing else</h2>
+<ol>
+<li>
+<p><strong>Clustering is unsupervised</strong> — grouping data by similarity alone, with no label to train against or
+   check against. That absence of ground truth is what makes "is this a good clustering?" a genuinely
+   harder question than any supervised metric from the Evaluation Metrics module.</p>
+</li>
+<li>
+<p><strong>K-Means minimises inertia</strong> — total squared distance from every point to its cluster's centroid — by
+   <strong>coordinate descent</strong>: repeatedly assign points to their nearest centroid, then move each centroid to the
+   mean of its assigned points, until nothing changes.</p>
+</li>
+<li>
+<p>K-Means is <strong>guaranteed to converge</strong>, monotonically decreasing its objective every step, but <strong>not
+   guaranteed to reach the best solution</strong> — the objective is non-convex, so a poor starting point can trap
+   it in a visibly worse stable arrangement.</p>
+</li>
+<li>
+<p><strong>K-Means++</strong> initialises centroids by preferring points far from ones already chosen, sharply reducing
+   (though not eliminating) the chance of a bad local optimum. It's scikit-learn's default, alongside running
+   several random restarts (<code>n_init</code>) and keeping the best.</p>
+</li>
+<li>
+<p>Choosing <span class="arithmatex">\(K\)</span>: <strong>inertia always decreases</strong> as <span class="arithmatex">\(K\)</span> grows, so it's read as a <em>shape</em> (the elbow method,
+   inexact) rather than a single number. The <strong>silhouette score</strong> — how much closer a point is to its own
+   cluster than to its nearest neighbour cluster — gives one comparable number per <span class="arithmatex">\(K\)</span> and doesn't share that
+   always-decreasing flaw.</p>
+</li>
+<li>
+<p><strong>Standardise features before clustering</strong> — Euclidean distance treats every feature's raw numeric scale
+   as equally important, exactly the lesson the Gradient Descent module taught about optimization.</p>
+</li>
+<li>
+<p>K-Means assumes clusters are <strong>roughly round and similarly sized</strong>; elongated, unevenly-sized, or
+   non-convex structure breaks it visibly, no matter how carefully <span class="arithmatex">\(K\)</span> or the initialisation is chosen. That's
+   what hierarchical and density-based clustering exist to handle instead.</p>
+</li>
+<li>
+<p>On real data (Pima diabetes measurements), K-Means found a two-group split, built with zero access to the
+   diagnosis label, that lined up with a meaningfully different diabetes rate between groups — clustering's
+   actual job: surfacing structure worth investigating, not replacing a trained classifier.</p>
+</li>
+</ol>
+<hr />
+<h2 id="10-further-reading-and-glossary">10. Further reading and glossary</h2>
+<h3 id="further-reading">Further reading</h3>
+<ul>
+<li>Stuart Lloyd (1982), <a href="https://doi.org/10.1109/TIT.1982.1056489"><em>Least Squares Quantization in PCM</em></a> — the paper behind "Lloyd's algorithm," the assign/update loop
+  this module implemented from scratch.</li>
+<li>David Arthur &amp; Sergei Vassilvitskii (2007), <a href="http://ilpubs.stanford.edu:8090/778/1/2006-13.pdf"><em>k-means++: The Advantages of Careful Seeding</em></a> — the original K-Means++ paper.</li>
+<li>scikit-learn's guide to <a href="https://scikit-learn.org/stable/modules/clustering.html">clustering</a> — every
+  algorithm mentioned in Section 7 (and many more), with the assumptions and trade-offs of each.</li>
+<li>scikit-learn's <a href="https://scikit-learn.org/stable/auto_examples/cluster/plot_kmeans_assumptions.html">K-Means assumptions example</a> — the anisotropic-blob
+  demonstration Section 7 adapted, alongside a few other failure modes worth seeing.</li>
+<li>Peter J. Rousseeuw (1987), <a href="https://doi.org/10.1016/0377-0427(87)90125-7"><em>Silhouettes: A Graphical Aid to the Interpretation and Validation of Cluster
+  Analysis</em></a> — the original silhouette-score paper.</li>
+</ul>
+<h3 id="glossary">Glossary</h3>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unsupervised learning</td>
+<td>Learning structure from data with no target label to train or validate against.</td>
+</tr>
+<tr>
+<td>Clustering</td>
+<td>Partitioning observations into groups of similar points, with no ground-truth grouping given.</td>
+</tr>
+<tr>
+<td>Centroid</td>
+<td>The point (typically the mean) representing a cluster in partition-based clustering.</td>
+</tr>
+<tr>
+<td>Inertia / WCSS</td>
+<td>K-Means' objective: total squared distance from every point to its cluster's centroid.</td>
+</tr>
+<tr>
+<td>Coordinate descent</td>
+<td>Optimizing by alternately fixing one set of parameters and solving exactly for the other.</td>
+</tr>
+<tr>
+<td>Lloyd's algorithm</td>
+<td>The classic assign-then-update loop that implements K-Means.</td>
+</tr>
+<tr>
+<td>Forgy initialization</td>
+<td>Initializing centroids as <span class="arithmatex">\(K\)</span> randomly chosen data points.</td>
+</tr>
+<tr>
+<td>K-Means++</td>
+<td>An initialization scheme that prefers centroids far from ones already chosen.</td>
+</tr>
+<tr>
+<td><code>n_init</code></td>
+<td>The number of random restarts scikit-learn's <code>KMeans</code> runs, keeping the lowest-inertia result.</td>
+</tr>
+<tr>
+<td>Elbow method</td>
+<td>Choosing <span class="arithmatex">\(K\)</span> by eye, from where the inertia-vs-<span class="arithmatex">\(K\)</span> curve stops falling steeply.</td>
+</tr>
+<tr>
+<td>Silhouette score</td>
+<td>A <span class="arithmatex">\([-1,1]\)</span> score comparing each point's distance to its own cluster vs. its nearest other cluster.</td>
+</tr>
+<tr>
+<td>K-Medoids</td>
+<td>A K-Means variant using an actual data point (medoid) instead of a mean, robust to outliers.</td>
+</tr>
+<tr>
+<td>Hierarchical clustering</td>
+<td>Building a nested tree of clusters instead of choosing <span class="arithmatex">\(K\)</span> upfront.</td>
+</tr>
+<tr>
+<td>Density-based clustering</td>
+<td>Defining clusters as dense regions of any shape (e.g. DBSCAN), rather than round regions around a centroid.</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../09_knn/" class="btn btn-neutral float-left" title="K-Nearest Neighbors"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../10_time_series_foundations/" class="btn btn-neutral float-right" title="Time Series Foundations">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2026 - Aayush Raj Regmi</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../09_knn/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../10_time_series_foundations/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../javascripts/mathjax.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
